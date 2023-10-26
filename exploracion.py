@@ -104,3 +104,5 @@ plt.contourf(temp)
 # Invertimos el eje vertical porque la presion es positiva
 plt.gca().invert_yaxis()
 plt.colorbar()
+
+# La rompimos
