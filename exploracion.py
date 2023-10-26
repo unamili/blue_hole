@@ -90,19 +90,36 @@ transecta = campaign_data[years[0]].loc[(campaign_data[years[0]]['lat'] > -45) &
                                      (campaign_data[years[0]]['time'])]
 
 # Tomamos las longitudes unicas para que sean las columnas del dataframe de la variable a graficar
-cant_lons = len(transecta.lon.unique())
+lons = transecta.lon.unique()
+cant_lons = len(lons)
 
 # Armamos el df de la variable a graficar
 temp = pd.DataFrame(np.nan, index=np.arange(int(transecta.pres.max())+1), columns=transecta.lon.unique())
+sal = pd.DataFrame(np.nan, index=np.arange(int(transecta.pres.max())+1), columns=transecta.lon.unique())
 
 # Iteramos en las filas de la transecta, completando el df de temp (o sal) con los valores obtenidos para la longitud y profundidad correspondientes
 for i, row in transecta.iterrows():
     temp.iloc[int(row['pres'])][row['lon']] = row['temp']
+    sal.iloc[int(row['pres'])][row['lon']] = row['sal']
 
-
+fig = plt.figure()
 plt.contourf(temp)
 # Invertimos el eje vertical porque la presion es positiva
 plt.gca().invert_yaxis()
 plt.colorbar()
 
-# La rompimos
+fig=plt.figure
+ax = plt.subplot()
+im = ax.contourf(sal, coords=["longitude", "sal"], cmap= 'Reds')
+# plt.yscale('log')
+plt.gca().invert_yaxis()
+plt.colorbar(im)
+
+fig = plt.figure()
+ax = fig.add_subplot(111)
+
+# Crea un gráfico de contorno con los puntos de 'y_points' en el eje y
+im = ax.contourf(sal, cmap='Reds')
+ax.invert_yaxis()
+plt.colorbar(im)
+plt.show()
