@@ -1,0 +1,169 @@
+"""
+Fig suplementaria 4.
+Corte vertical de S y velocidad alongshore de la transecta 2
+"""
+
+path_gral = '/media/giuliana/Disco1TB/'
+
+import Figuras_paper_aux as fpa
+import numpy as np
+import math
+from scipy.interpolate import griddata
+import matplotlib.pyplot as plt
+
+
+DATA,lat_CTD,lon_CTD = fpa.carga_datos_CTD()
+T,S,O2,Fluo,z = fpa.regrillado_vertical()
+U1,V1 = fpa.datos_ADCP_cada_1m()
+
+seccion = 2
+#
+# fpa.corte_seccion2_suplementario_paper(seccion,'S',T,S, DATA,letra='A')
+# fpa.corte_seccion_along(seccion, U1,V1, DATA,suave = 'si')
+
+for cosas_necesarias_p_sal in range(1):
+    prof = [DATA[8]['PRES'][-1], DATA[9]['PRES'][-1], DATA[10]['PRES'][-1], 891,DATA[12]['PRES'][-1],  DATA[13]['PRES'][-1], DATA[14]['PRES'][-1], DATA[15]['PRES'][-1],DATA[16]['PRES'][-1],DATA[17]['PRES'][-1],DATA[18]['PRES'][-1]]
+    lat = [DATA[8]['LATITUDE'][1], DATA[9]['LATITUDE'][1], DATA[10]['LATITUDE'][1],  DATA[11]['LATITUDE'][1], DATA[12]['LATITUDE'][1], DATA[13]['LATITUDE'][1], DATA[14]['LATITUDE'][1], DATA[15]['LATITUDE'][1],DATA[16]['LATITUDE'][1],DATA[17]['LATITUDE'][1],DATA[18]['LATITUDE'][1]]
+    lon = [DATA[8]['LONGITUDE'][1], DATA[9]['LONGITUDE'][1], DATA[10]['LONGITUDE'][1], DATA[11]['LONGITUDE'][1],DATA[12]['LONGITUDE'][1], DATA[13]['LONGITUDE'][1], DATA[14]['LONGITUDE'][1], DATA[15]['LONGITUDE'][1],DATA[16]['LONGITUDE'][1],DATA[17]['LONGITUDE'][1],DATA[18]['LONGITUDE'][1]]
+    ind_i,ind_f = 8,19   #indices dentro de la matriz
+    estaciones=['9' ,'10' ,'11' ,'12' ,'13' ,'14' ,'15' ,'16','17','18','19']
+    #extension de los datos al fondo:
+    AA_S = S[:,ind_i:ind_f]
+    for st in range(0,len(prof)):
+        primero_con_nan_S = len(AA_S[:,st][np.isnan(AA_S[:,st]) == False])
+        AA_S[primero_con_nan_S:,st] = AA_S[primero_con_nan_S-1,st]
+    #distancia entre estaciones dentro de la seccion
+    dist_entre_est = [0]*len(prof)
+    dist = [0]*len(prof)
+    for i in range(1,len(prof)):
+        a = 90-lat[i-1]
+        b = 90-lat[i]
+        phi = lon[i-1]-lon[i]
+        cosp = math.cos(math.radians(a))*math.cos(math.radians(b))+math.sin(math.radians(a))*math.sin(math.radians(b))*math.cos(math.radians(phi))
+        p = math.degrees(math.acos(cosp))
+        dist_entre_est[i] = p*6371*math.pi/180  #dist km
+        dist [0] = 0
+        dist [i] = dist_entre_est[i]+dist[i-1]
+    #array de profundidades:
+    z = np.linspace(0,4999,5000)
+
+    #Interpolacion entre estaciones con una resolucion de 100ptos por seccion:
+    dist_aux,z_aux = np.meshgrid(dist,z)
+    points = (dist_aux.flatten(),z_aux.flatten())
+    values_S = AA_S.flatten()
+    x,p = np.meshgrid(np.linspace(0,dist[-1],100),z)
+    data_S = griddata(points,values_S,(x,p),method='linear')
+    #Suavizado
+    sigma = 0.99 #this depends on how noisy your data is, play with it!
+    data_S = fpa.suavizado(data_S)
+    #Niveles
+    levels = [32,32.5,33,33.5,34,34.5,35,35.5,36,36.5,37]
+    levels_contorno = [32,32.5,33,33.5,34,34.15,34.2,34.5,35,35.5,36,36.5,37]
+    levels_label = [32,33,34,35,36]
+    cmap =  plt.cm.get_cmap('Reds', 20)
+    txt = 'Salinity - Section '+ str(seccion)
+    txt2 = 'A)'
+    txt3 = ''
+    vmin, vmax = 32,37
+    data = data_S
+
+#Plot
+fig1 = plt.figure(figsize=(16,8))
+#Salinidad
+xo,yo1,yo2 = 0.07,0.55 ,0.08
+dx = 0.37
+dy1 = 0.4
+dy2 = 0.43
+
+ax1 = fig1.add_axes([xo,yo1,dx,dy1])
+CF = ax1.contourf(x[:1000,:],p[:1000,:],data[:1000,:],levels,cmap=cmap,vmin=vmin,vmax=vmax,extend = 'max')
+CC = ax1.contour(x[:1000,:],p[:1000,:],data[:1000,:],levels, colors=('k'),linewidths=1.5)
+ax1.clabel(CC,levels_label,inline=1, fmt='%1.1f', fontsize=24)
+
+for est in range(0,len(prof)):
+    ax1.text(dist[est]-2,-4,estaciones[est],size = 24)
+ax1.scatter(dist,np.zeros(len(dist)),marker = "v",color = 'k',s=200)
+ax1.axis([0,156,200,0])
+plt.xticks(size = 0)
+plt.yticks([0,50,100,150,200],size = 24)
+
+######
+ax2 = fig1.add_axes([xo,yo2,dx,dy2])
+CF = ax2.contourf(x[190:1000,:],p[190:1000,:],data[190:1000,:],levels,cmap=cmap,vmin=vmin,vmax=vmax,extend = 'max')
+CC = ax2.contour(x[190:1000,:],p[190:1000,:],data[190:1000,:],levels_contorno, colors=('k'),linewidths=1.5)
+ax2.clabel(CC,levels_label,inline=1, fmt='%1.1f', fontsize=24)
+ax2.scatter(dist,200*np.ones(len(dist)),marker = "v",color = 'k',s=200)
+ax2.set_xlabel('Distance (km)', size=22)
+ax2.set_ylabel('Pressure (db)', size=22)
+plt.xticks(size = 24)
+plt.yticks([300,500,700],size = 24)
+ax2.text(3,830,txt2,size = 24)
+ax2.axis([0,156,850,200])
+cax_sal = fig1.add_axes([xo+dx+0.01,0.2,0.02,0.7])
+cbar = fig1.colorbar(CF,orientation='vertical',cax = cax_sal)
+cbar.set_label(label=txt3,fontsize=30)
+cbar.ax.tick_params(labelsize=24)
+######
+
+# Velocidad along-shore
+for cosas_necesarias_p_veloc in range(1):
+    letra = 'B'
+    #extension de los datos al fondo:
+    U_seccion = U1[:,ind_i:ind_f]
+    V_seccion = V1[:,ind_i:ind_f]
+    for st in range(0,len(prof)):
+        primero_con_nan = len(U_seccion[:,st][np.isnan(U_seccion[:,st]) == False])
+        U_seccion[primero_con_nan:,st] = U_seccion[primero_con_nan-1,st]
+        V_seccion[primero_con_nan:,st] = V_seccion[primero_con_nan-1,st]
+    #Reproyeccion sobre seccion:
+    valong = V_seccion
+    #Interpolacion entre estaciones con una resolucion de 100ptos por seccion:
+    dist_aux,z_aux = np.meshgrid(dist,z)
+    points = (dist_aux.flatten(),z_aux.flatten())
+    values = valong.flatten()
+    x,p = np.meshgrid(np.linspace(0,dist[-1],100),z)
+    data_vel = griddata(points,values,(x,p),method='linear')
+    levels = np.linspace(-60,60,13)
+    levels_label = [-120,-100,-80,-60,-40,-20,0,20,40,60,80,100,120]
+    levels_contorno = np.linspace(-120,120,25)
+    cmap = plt.cm.get_cmap('coolwarm',12)
+    txt = 'Velocity alongshore - Section 2'
+    txt2 =  'B)'
+    txt3 = r'$cm.s^{-1}$'
+    vmin, vmax = -60,60
+    #Suavizo
+    data_vel = fpa.suavizado(data_vel)
+
+## Velocidad along-shore
+xo = xo+dx+0.08
+#####sup
+ax3 = fig1.add_axes([xo,yo1,dx,dy1])
+CF = ax3.contourf(x[:210,:],p[:210,:],data_vel[:210,:],levels,cmap=cmap,vmin=vmin,vmax=vmax, extend = 'both')
+CC = ax3.contour(x[:210,:],p[:210,:],data_vel[:210,:],levels_contorno, colors=('k'),linewidths=1.5)
+ax3.clabel(CC,levels_label,inline=1, fmt='%1.f', fontsize=24)
+#estaciones de CTD
+for est in range(0,len(prof)):
+    ax3.text(dist[est]-2,-4,estaciones[est],size = 24)
+ax3.scatter(dist,np.zeros(len(dist)),marker = "v",color = 'k',s=200)
+plt.xticks(size = 0)
+plt.yticks([0,50,100,150,200],size = 0)
+ax3.axis([0,156,200,0])
+
+####prof
+ax4 = fig1.add_axes([xo,yo2,dx,dy2])
+CF = ax4.contourf(x[190:,:],p[190:,:],data_vel[190:,:],levels,cmap=cmap,vmin=vmin,vmax=vmax, extend = 'both')
+CC = ax4.contour(x[190:,:],p[190:,:],data_vel[190:,:],levels_contorno, colors=('k'),linewidths=1.5)
+
+ax4.clabel(CC,levels_label,inline=1, fmt='%1.f', fontsize=24)
+ax4.scatter(dist,200*np.ones(len(dist)),marker = "v",color = 'k',s=200)
+plt.yticks([300,500,700],size = 0)
+ax4.axis([0,156,850,200])
+ax4.text(3,830,txt2,size = 24,zorder = 5)
+plt.xlabel('Distance (km)', size=22)
+plt.xticks(size = 24)
+
+# Colorbar
+cax_vel = fig1.add_axes([xo+dx+0.01,0.2,0.02,0.7])
+cbar = fig1.colorbar(CF,orientation='vertical',cax = cax_vel)
+cbar.set_label(label=txt3,fontsize=24)
+cbar.ax.tick_params(labelsize=24)
