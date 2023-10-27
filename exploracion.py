@@ -12,6 +12,7 @@ import save
 import pandas as pd
 import plot
 
+
 # Definimos paths a la data y a directorios de guardado
 data_path = paths().data_path()
 plot_path = paths().plots_path()
@@ -24,6 +25,11 @@ nombre_especifico_de_esta_corrida = 'cast_loc/'
 # Definimos el directorio de guardado de plots de esta corrida
 save_plot_path = plot_path + nombre_especifico_de_esta_corrida
 save_data_path = save_path + nombre_especifico_de_esta_corrida
+
+
+
+
+path_perfiles = '/media/giuliana/Samsung_T5/proyectos_doc/Data/blue_hole/perfiles/'
 
 # Tomamos las carpetas de datos
 folders = glob.glob(path_perfiles + '/*')[::-1]  # Invierte el orden de los elementos
@@ -102,11 +108,23 @@ for i, row in transecta.iterrows():
     temp.iloc[int(row['pres'])][row['lon']] = row['temp']
     sal.iloc[int(row['pres'])][row['lon']] = row['sal']
 
+temp_columns_sorted = temp.reindex(sorted(temp.columns), axis=1)
+
+
 fig = plt.figure()
-plt.contourf(temp)
+plt.contourf(lons, temp_columns_sorted.index, temp_columns_sorted.values)
 # Invertimos el eje vertical porque la presion es positiva
 plt.gca().invert_yaxis()
 plt.colorbar()
+
+xx, yy = np.meshgrid(lons, temp_columns_sorted.index)
+fig = plt.figure()
+plt.scatter(xx, yy, c=temp_columns_sorted.values, s=0.5)
+# Invertimos el eje vertical porque la presion es positiva
+plt.gca().invert_yaxis()
+plt.colorbar()
+
+
 
 fig=plt.figure
 ax = plt.subplot()
