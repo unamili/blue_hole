@@ -27,7 +27,7 @@ class paths():
         path as str
         '''
 
-        data_path = self.main_path + 'Data/blue_hole/'
+        data_path = self.main_path + 'Data/agujeroazul/'
 
         return data_path
 
@@ -52,7 +52,7 @@ class paths():
         path as str
         '''
 
-        plots_path = self.main_path + 'blue_hole/Plots/'
+        plots_path = self.main_path + 'proyecto_doc/agujeroazul/Plots/'
 
         os.makedirs(plots_path, exist_ok=True)
         return plots_path
@@ -65,7 +65,7 @@ class paths():
         path as str
         '''
 
-        save_path = self.main_path + 'blue_hole/Save/'
+        save_path = self.main_path + 'proyecto_doc/agujeroazul/Save/'
 
         os.makedirs(save_path, exist_ok=True)
 
