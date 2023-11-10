@@ -15,7 +15,7 @@ class paths():
             if not external_drive_connected:
                 self.main_path = '/media/agulhas/HDD4T/Documents/Rutinas/'
         # Aca, una vez en la mac, correr la linea de arriba, os.popen('whoami').read, y cambiar el nombre 'mac\n' por el que aparezca
-        if self.name == 'mac\n':
+        if self.name == 'mila\n':
             self.main_path = '/Volumes/Samsung_T5/Rutinas/'
 
     def data_path(self):
@@ -34,7 +34,7 @@ class paths():
     def tp_data_path(self):
         '''
         Path to data directory.
-        A partir del path del disco, ya obtenido para la computadora actual, defineel path a los datos.
+        A partir del path del disco, ya obtenido para la computadora actual, define el path a los datos.
 
         :return:
         path as str
@@ -71,15 +71,28 @@ class paths():
 
         return save_path
 
+    def bath_path(self):
+        '''
+        Path to bathymetry
 
-path_Rutinas = '/media/agulhas/HDD4T/california/Documents/disco2T/Rutinas'
-path_Figuras = '/media/agulhas/HDD4T/california/Documents/disco2T/Rutinas/Proyecto_doc/Figuras'
+        :return:
+        path as str
+        '''
+        bath_path = self.main_path + 'Batimetria/'
+        os.makedirs(bath_path, exist_ok=True)
 
-path_Rutinas_disco = '/Volumes/Samsung_T5/COMPU CALIFORNIA/Rutinas'
-path_Figuras_disco = '/Volumes/Samsung_T5/COMPU CALIFORNIA/Rutinas/Proyecto_doc/Figuras'
+        return bath_path
 
-path_Datos_disco = '/Volumes/Samsung_T5/COMPU CALIFORNIA/Datos'
 
-path_perfiles_agujeroazul_2021 = '/Volumes/Samsung_T5/Datos Agujero Azul/perfiles/CTD_AA_2021/'
-path_perfiles_agujeroazul_2017 = '/Volumes/Samsung_T5/Datos Agujero Azul/perfiles/CTD_AU042017/'
-path_perfiles_agujeroazul = '/Volumes/Samsung_T5/Datos Agujero Azul/perfiles/'
+
+#path_Rutinas = '/media/agulhas/HDD4T/california/Documents/disco2T/Rutinas'
+#path_Figuras = '/media/agulhas/HDD4T/california/Documents/disco2T/Rutinas/Proyecto_doc/Figuras'
+
+#path_Rutinas_disco = '/Volumes/Samsung_T5/COMPU CALIFORNIA/Rutinas'
+#path_Figuras_disco = '/Volumes/Samsung_T5/COMPU CALIFORNIA/Rutinas/Proyecto_doc/Figuras'
+
+#path_Datos_disco = '/Volumes/Samsung_T5/COMPU CALIFORNIA/Datos'
+
+#path_perfiles_agujeroazul_2021 = '/Volumes/Samsung_T5/Datos Agujero Azul/perfiles/CTD_AA_2021/'
+#path_perfiles_agujeroazul_2017 = '/Volumes/Samsung_T5/Datos Agujero Azul/perfiles/CTD_AU042017/'
+#path_perfiles_agujeroazul = '/Volumes/Samsung_T5/Datos Agujero Azul/perfiles/'

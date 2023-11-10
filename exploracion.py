@@ -1,17 +1,12 @@
 import pycnv #otro puede ser fCNV de seabird
-import pylab as pl
-import paths
 import datetime
-import time
-import pickle
 import glob
 import numpy as np
 import matplotlib.pyplot as plt
 from paths import paths
-import save
 import pandas as pd
-import plot
 import warnings
+import xarray as xr
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 # Definimos paths a la data y a directorios de guardado
@@ -71,7 +66,7 @@ for i, (reference_date, folder) in enumerate(zip(reference_dates, folders)):
             row = {}
 
             # Agregamos la data a la fila
-            row['time'] = utc_time.strftime("%Y-%m-%d %H:%M:%S")
+            row['time'] = utc_time
             row['lat'] = lat
             row['lon'] = lon
             row['pres'] = presion
@@ -116,7 +111,6 @@ for i in range(len(lats)-1):
 
 estaciones_sin_repetir = estaciones_sorted.drop(estaciones_sorted.index[np.array(i_to_drop)])
 
-
 # Crea una máscara booleana para filtrar las filas
 mascara_de_filtro = ~((campaign_data[2017]['lat'].isin(np.array(lats_to_drop))) & (campaign_data[2017]['lon'].isin(np.array(lons_to_drop))))
 
@@ -134,9 +128,8 @@ transecta_central_2017 = datos_filtrados_campaña.loc[(datos_filtrados_campaña[
 transecta_sur_2017 = datos_filtrados_campaña.loc[(datos_filtrados_campaña['lat'] > -46.2) &
                                  (datos_filtrados_campaña['lat'] < -45.5)]
 
-
-
 # Estamos probando seleccionar la temperatura y salinidad de una transecta y graficarla
+
 transecta = transecta_central_2017
 
 # Armamos el df de la variable a graficar
@@ -163,3 +156,22 @@ plt.scatter(xx, yy, c=temp_columns_sorted.values, s=0.5)
 # Invertimos el eje vertical porque la presion es positiva
 plt.gca().invert_yaxis()
 plt.colorbar()
+
+# Quiero introducir la batimetria al plot de la seccion
+
+bath_path = paths().bath_path()
+
+bat = xr.open_dataset(bath_path + 'bat_res025_pat.nc')
+
+bat_norte = bat.sel(lat=transecta_norte_2017.lat.values.mean(), method='nearest')
+bat_norte = bat_norte.sel(lon=slice(transecta_norte_2017.lon.values[-1], transecta_norte_2017.lon.values[0]))
+
+bat_central = bat.sel(lat=transecta_central_2017.lat.values.mean(), method='nearest')
+bat_central = bat_central.sel(lon=slice(transecta_central_2017.lon.values[0], transecta_central_2017.lon.values[-1]))
+
+bat_sur = bat.sel(lat=transecta_sur_2017.lat.values.mean(), method='nearest')
+bat_sur = bat_sur.sel(lon=slice(transecta_sur_2017.lon.values[-1], transecta_sur_2017.lon.values[0]))
+
+
+plt.fill_between(bat_sur.bat )
+
