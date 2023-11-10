@@ -11,7 +11,8 @@ from paths import paths
 import save
 import pandas as pd
 import plot
-
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 # Definimos paths a la data y a directorios de guardado
 data_path = paths().data_path()
@@ -25,11 +26,6 @@ nombre_especifico_de_esta_corrida = 'cast_loc/'
 # Definimos el directorio de guardado de plots de esta corrida
 save_plot_path = plot_path + nombre_especifico_de_esta_corrida
 save_data_path = save_path + nombre_especifico_de_esta_corrida
-
-
-
-
-path_perfiles = '/media/giuliana/Samsung_T5/proyectos_doc/Data/blue_hole/perfiles/'
 
 # Tomamos las carpetas de datos
 folders = glob.glob(path_perfiles + '/*')[::-1]  # Invierte el orden de los elementos
@@ -90,14 +86,58 @@ for i, (reference_date, folder) in enumerate(zip(reference_dates, folders)):
     # Ordenamos temporalmente
     # campaign_data[years[i]].sort_values('time', inplace=True)
 
-# Toamos una transecta filtrando los valores de una campaña por latitud (opcional tiempo (campaign_data[years[0]]['time'] < algo))
-transecta = campaign_data[years[0]].loc[(campaign_data[years[0]]['lat'] > -45) &
-                                     (campaign_data[years[0]]['lat'] < -44) &
-                                     (campaign_data[years[0]]['time'])]
+# Para la campaña del 2017 donde se muestreo el mismo punto por el dia y por la noche pero con perfiles de distintas profundidades
+# Me quiero quedar unicamente con el perfil que se realizó hasta el fondo.
 
-# Tomamos las longitudes unicas para que sean las columnas del dataframe de la variable a graficar
-lons = transecta.lon.unique()
-cant_lons = len(lons)
+estaciones = campaign_data[2017].drop_duplicates(subset=['lat', 'lon'], keep='last')
+estaciones_sorted = estaciones.sort_values('lat')
+lats = estaciones_sorted['lat'].values
+lons = estaciones_sorted['lon'].values
+
+estaciones_aux = estaciones_sorted
+threshold = 0.15
+cant_estaciones_repetidas = 0
+i_to_drop = []
+lats_to_drop = []
+lons_to_drop = []
+for i in range(len(lats)-1):
+    if abs(lats[i]-lats[i+1]) < threshold and abs(lons[i]-lons[i+1]) < threshold:
+        cant_estaciones_repetidas = cant_estaciones_repetidas+1
+        if estaciones_sorted.pres.values[i] > estaciones_sorted.pres.values[i+1]:
+            i_to_drop.append(i+1)
+            lats_to_drop.append(estaciones_sorted.lat.values[i+1])
+            lons_to_drop.append(estaciones_sorted.lon.values[i+1])
+        elif estaciones_sorted.pres.values[i] < estaciones_sorted.pres.values[i+1]:
+            i_to_drop.append(i)
+            lats_to_drop.append(estaciones_sorted.lat.values[i])
+            lons_to_drop.append(estaciones_sorted.lon.values[i])
+    else:
+        None
+
+estaciones_sin_repetir = estaciones_sorted.drop(estaciones_sorted.index[np.array(i_to_drop)])
+
+
+# Crea una máscara booleana para filtrar las filas
+mascara_de_filtro = ~((campaign_data[2017]['lat'].isin(np.array(lats_to_drop))) & (campaign_data[2017]['lon'].isin(np.array(lons_to_drop))))
+
+# Aplica el filtro para mantener solo las filas deseadas
+datos_filtrados_campaña = campaign_data[2017][mascara_de_filtro]
+
+
+# Tomamos una transecta filtrando los valores de una campaña por latitud (opcional tiempo (campaign_data[years[0]]['time'] < algo))
+transecta_norte_2017 = datos_filtrados_campaña.loc[(datos_filtrados_campaña['lat'] > -44) &
+                                     (datos_filtrados_campaña['lat'] < -42.9)]
+
+transecta_central_2017 = datos_filtrados_campaña.loc[(datos_filtrados_campaña['lat'] > -45) &
+                                     (datos_filtrados_campaña['lat'] < -44)]
+
+transecta_sur_2017 = datos_filtrados_campaña.loc[(datos_filtrados_campaña['lat'] > -46.2) &
+                                 (datos_filtrados_campaña['lat'] < -45.5)]
+
+
+
+# Estamos probando seleccionar la temperatura y salinidad de una transecta y graficarla
+transecta = transecta_central_2017
 
 # Armamos el df de la variable a graficar
 temp = pd.DataFrame(np.nan, index=np.arange(int(transecta.pres.max())+1), columns=transecta.lon.unique())
@@ -109,7 +149,7 @@ for i, row in transecta.iterrows():
     sal.iloc[int(row['pres'])][row['lon']] = row['sal']
 
 temp_columns_sorted = temp.reindex(sorted(temp.columns), axis=1)
-
+lons = sorted(transecta.lon.unique())
 
 fig = plt.figure()
 plt.contourf(lons, temp_columns_sorted.index, temp_columns_sorted.values)
@@ -123,21 +163,3 @@ plt.scatter(xx, yy, c=temp_columns_sorted.values, s=0.5)
 # Invertimos el eje vertical porque la presion es positiva
 plt.gca().invert_yaxis()
 plt.colorbar()
-
-
-
-fig=plt.figure
-ax = plt.subplot()
-im = ax.contourf(sal, coords=["longitude", "sal"], cmap= 'Reds')
-# plt.yscale('log')
-plt.gca().invert_yaxis()
-plt.colorbar(im)
-
-fig = plt.figure()
-ax = fig.add_subplot(111)
-
-# Crea un gráfico de contorno con los puntos de 'y_points' en el eje y
-im = ax.contourf(sal, cmap='Reds')
-ax.invert_yaxis()
-plt.colorbar(im)
-plt.show()

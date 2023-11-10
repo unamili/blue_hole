@@ -5,12 +5,18 @@ class paths():
     def __init__(self):
         self.name = os.popen('whoami').read()
 
-        # Define el path al disco rigido, para poder correr las cosas desde cualquier pc usando el disco externo
-        if self.name == 'agulhas\n':
-            self.samsung_path = '/media/agulhas/Samsung_T5/'
+        # Define el path al lugar principal para poder correr las cosas desde cualquier pc
+        if self.name == 'agulhas\n':  # Computadora del servicio
+            # por default tomamos el path al disco externo
+            self.main_path = '/media/agulhas/Samsung_T5/Rutinas/'
+            # Chequeamos si ese directorio existe (si esta conectado)
+            external_drive_connected = os.path.isdir(self.main_path)
+            # Si no eta conectado, tomamos el path al directrio local
+            if not external_drive_connected:
+                self.main_path = '/media/agulhas/HDD4T/Documents/Rutinas/'
         # Aca, una vez en la mac, correr la linea de arriba, os.popen('whoami').read, y cambiar el nombre 'mac\n' por el que aparezca
         if self.name == 'mac\n':
-            self.samsung_path = '/Volumes/Samsung_T5/'
+            self.main_path = '/Volumes/Samsung_T5/Rutinas/'
 
     def data_path(self):
         '''
@@ -21,7 +27,20 @@ class paths():
         path as str
         '''
 
-        data_path = self.samsung_path + 'proyectos_doc/Data/blue_hole/'
+        data_path = self.main_path + 'Data/agujeroazul/'
+
+        return data_path
+
+    def tp_data_path(self):
+        '''
+        Path to data directory.
+        A partir del path del disco, ya obtenido para la computadora actual, defineel path a los datos.
+
+        :return:
+        path as str
+        '''
+
+        data_path = self.main_path + 'Data/TP_seminario/'
 
         return data_path
 
@@ -33,7 +52,7 @@ class paths():
         path as str
         '''
 
-        plots_path = self.samsung_path + 'proyectos_doc/blue_hole/Plots/'
+        plots_path = self.main_path + 'proyecto_doc/agujeroazul/Plots/'
 
         os.makedirs(plots_path, exist_ok=True)
         return plots_path
@@ -46,7 +65,7 @@ class paths():
         path as str
         '''
 
-        save_path = self.samsung_path + 'proyectos_doc/blue_hole/Save/'
+        save_path = self.main_path + 'proyecto_doc/agujeroazul/Save/'
 
         os.makedirs(save_path, exist_ok=True)
 
