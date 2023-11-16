@@ -128,6 +128,25 @@ transecta_central_2017 = datos_filtrados_campaña.loc[(datos_filtrados_campaña[
 transecta_sur_2017 = datos_filtrados_campaña.loc[(datos_filtrados_campaña['lat'] > -46.2) &
                                  (datos_filtrados_campaña['lat'] < -45.5)]
 
+
+transecta_central_2021 = campaign_data[2021].loc[(campaign_data[2021]['lat'] > -44.75) &
+                                     (campaign_data[2021]['lat'] < -44)]
+
+transecta_sur_2021 = campaign_data[2021].loc[(campaign_data[2021]['lat'] > -46.2) &
+                                 (campaign_data[2021]['lat'] < -45.5)]
+
+lats_to_drop = [transecta_sur_2021.lat.unique()[3], transecta_sur_2021.lat.unique()[5]]
+lons_to_drop = [transecta_sur_2021.lon.unique()[3], transecta_sur_2021.lon.unique()[5]]
+
+transecta_sur_2021 = transecta_sur_2021.drop(index=transecta_sur_2021[transecta_sur_2021.lon.isin(lons_to_drop)].index)
+
+
+
+
+
+
+
+
 # Estamos probando seleccionar la temperatura y salinidad de una transecta y graficarla
 
 transecta = transecta_central_2017

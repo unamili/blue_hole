@@ -12,9 +12,8 @@ from scipy.interpolate import griddata
 import matplotlib.pyplot as plt
 
 
-DATA,lat_CTD,lon_CTD = fpa.carga_datos_CTD()
-T,S,O2,Fluo,z = fpa.regrillado_vertical()
-U1,V1 = fpa.datos_ADCP_cada_1m()
+
+
 
 seccion = 2
 #
