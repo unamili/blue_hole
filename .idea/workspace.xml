@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4fc70955-8fb8-457b-be78-9bbe7478685c" name="Changes" comment="diagramas TS y prueba de transectas" />
+    <list default="true" id="4fc70955-8fb8-457b-be78-9bbe7478685c" name="Changes" comment="diagramas TS y prueba de transectas">
+      <change beforePath="$PROJECT_DIR$/.idea/Scripts.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Scripts.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/exploracion.py" beforeDir="false" afterPath="$PROJECT_DIR$/exploracion.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -39,15 +43,15 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;/media/agulhas/HDD4T/Documents/Rutinas/proyecto_doc/agujeroazul/Scripts&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;PyConsoleConfigurable.Python Console&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.project&quot;
   }
 }</component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
-      <console-settings custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;%load_ext autoreload&#10;%autoreload 2" module-name="agujeroazul" is-module-sdk="true">
+      <console-settings custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;%load_ext autoreload&#10;%autoreload 2" module-name="Scripts" is-module-sdk="true">
         <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;%load_ext autoreload&#10;%autoreload 2" />
         <option name="myUseModuleSdk" value="true" />
-        <option name="myModuleName" value="agujeroazul" />
+        <option name="myModuleName" value="Scripts" />
       </console-settings>
     </option>
   </component>
@@ -92,7 +96,15 @@
       <option name="project" value="LOCAL" />
       <updated>1700165315608</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="diagramas TS y prueba de transectas">
+      <option name="closed" value="true" />
+      <created>1700165351738</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1700165351738</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -103,5 +115,16 @@
     <MESSAGE value="Separacion de transectas sinopticas, sin est repetidas" />
     <MESSAGE value="diagramas TS y prueba de transectas" />
     <option name="LAST_COMMIT_MESSAGE" value="diagramas TS y prueba de transectas" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/exploracion.py</url>
+          <line>112</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

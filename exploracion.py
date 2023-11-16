@@ -3,6 +3,8 @@ import datetime
 import glob
 import numpy as np
 import matplotlib.pyplot as plt
+
+import save
 from paths import paths
 import pandas as pd
 import warnings
@@ -14,13 +16,6 @@ data_path = paths().data_path()
 plot_path = paths().plots_path()
 save_path = paths().save_path()
 path_perfiles = data_path + 'perfiles/'
-
-# Definimos el nombre de esta corrida para guardar en una sub carpeta
-nombre_especifico_de_esta_corrida = 'cast_loc/'
-
-# Definimos el directorio de guardado de plots de esta corrida
-save_plot_path = plot_path + nombre_especifico_de_esta_corrida
-save_data_path = save_path + nombre_especifico_de_esta_corrida
 
 # Tomamos las carpetas de datos
 folders = glob.glob(path_perfiles + '/*')[::-1]  # Invierte el orden de los elementos
@@ -141,16 +136,44 @@ lons_to_drop = [transecta_sur_2021.lon.unique()[3], transecta_sur_2021.lon.uniqu
 transecta_sur_2021 = transecta_sur_2021.drop(index=transecta_sur_2021[transecta_sur_2021.lon.isin(lons_to_drop)].index)
 
 
+# Ejemplo corto de guardar
+save.var(var=transecta_norte_2017, path=save_path + 'Transectas/', fname='transecta_norte_2017')
 
 
+from scipy.interpolate import griddata
+
+transecta = transecta_norte_2017
+temp = pd.DataFrame(np.nan, index=np.arange(int(transecta.pres.max())+1), columns=transecta.lon.unique())
+
+# Iteramos en las filas de la transecta, completando el df de temp (o sal) con los valores obtenidos para la longitud y profundidad correspondientes
+for i, row in transecta.iterrows():
+    temp.iloc[int(row['pres'])][row['lon']] = row['temp']
+
+lons_plot = np.linspace(lons[0], lons[-1], 18)
+
+temp.drop([0,1], inplace=True)
+
+# Crear una malla de puntos para la interpolación
+xx, yy = np.meshgrid(lons_plot, np.sort(transecta_norte_2017.pres.unique()))
+
+temp_columns_sorted = temp.reindex(sorted(temp.columns), axis=1)
+lons = sorted(transecta.lon.unique())
 
 
+# Obtener los puntos de entrada para la interpolación (datos originales)
+pres_unique = np.sort(transecta.pres.unique())
 
+points = np.array([(lon, pres) for lon in lons for pres in pres_unique])
+values = (temp_columns_sorted.values.T.flatten())  # Asegúrate de tener los valores de temperatura en un array 1D
+
+# Realizar la interpolación utilizando griddata
+foo = griddata(points, values, (xx, yy), method='linear')
+
+transecta_norte_2017['temp'] = transecta_norte_2017['temp'].interpolate(method='linear')
 
 # Estamos probando seleccionar la temperatura y salinidad de una transecta y graficarla
-
 transecta = transecta_central_2017
-
+transecta = transecta_norte_2017
 # Armamos el df de la variable a graficar
 temp = pd.DataFrame(np.nan, index=np.arange(int(transecta.pres.max())+1), columns=transecta.lon.unique())
 sal = pd.DataFrame(np.nan, index=np.arange(int(transecta.pres.max())+1), columns=transecta.lon.unique())
@@ -163,19 +186,6 @@ for i, row in transecta.iterrows():
 temp_columns_sorted = temp.reindex(sorted(temp.columns), axis=1)
 lons = sorted(transecta.lon.unique())
 
-fig = plt.figure()
-plt.contourf(lons, temp_columns_sorted.index, temp_columns_sorted.values)
-# Invertimos el eje vertical porque la presion es positiva
-plt.gca().invert_yaxis()
-plt.colorbar()
-
-xx, yy = np.meshgrid(lons, temp_columns_sorted.index)
-fig = plt.figure()
-plt.scatter(xx, yy, c=temp_columns_sorted.values, s=0.5)
-# Invertimos el eje vertical porque la presion es positiva
-plt.gca().invert_yaxis()
-plt.colorbar()
-
 # Quiero introducir la batimetria al plot de la seccion
 
 bath_path = paths().bath_path()
@@ -183,7 +193,7 @@ bath_path = paths().bath_path()
 bat = xr.open_dataset(bath_path + 'bat_res025_pat.nc')
 
 bat_norte = bat.sel(lat=transecta_norte_2017.lat.values.mean(), method='nearest')
-bat_norte = bat_norte.sel(lon=slice(transecta_norte_2017.lon.values[-1], transecta_norte_2017.lon.values[0]))
+bat_norte = bat_norte.sel(lon=slice(transecta_norte_2017.lon.values.min(), transecta_norte_2017.lon.values.max()))
 
 bat_central = bat.sel(lat=transecta_central_2017.lat.values.mean(), method='nearest')
 bat_central = bat_central.sel(lon=slice(transecta_central_2017.lon.values[0], transecta_central_2017.lon.values[-1]))
@@ -192,5 +202,26 @@ bat_sur = bat.sel(lat=transecta_sur_2017.lat.values.mean(), method='nearest')
 bat_sur = bat_sur.sel(lon=slice(transecta_sur_2017.lon.values[-1], transecta_sur_2017.lon.values[0]))
 
 
-plt.fill_between(bat_sur.bat )
+# Plot
+fig = plt.figure()
+plt.contourf(lons, temp_columns_sorted.index, temp_columns_sorted.values)
+# Invertimos el eje vertical porque la presion es positiva
+plt.gca().invert_yaxis()
+plt.colorbar()
+plt.plot(bat_norte.lon.values, -bat_norte.bat.values, 'k')
+plt.fill_between(bat_norte.lon.values, -bat_norte.bat.values, plt.gca().get_ylim()[0], color='grey', alpha=0.5)
 
+
+
+
+
+
+
+###
+
+#xx, yy = np.meshgrid(lons, temp_columns_sorted.index)
+#fig = plt.figure()
+#plt.scatter(xx, yy, c=temp_columns_sorted.values, s=0.5)
+# Invertimos el eje vertical porque la presion es positiva
+#plt.gca().invert_yaxis()
+#plt.colorbar()
