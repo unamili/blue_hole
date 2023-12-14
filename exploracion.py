@@ -136,9 +136,12 @@ lons_to_drop = [transecta_sur_2021.lon.unique()[3], transecta_sur_2021.lon.uniqu
 transecta_sur_2021 = transecta_sur_2021.drop(index=transecta_sur_2021[transecta_sur_2021.lon.isin(lons_to_drop)].index)
 
 
-# Ejemplo corto de guardar
+# Guardo las variables como pikles
 save.var(var=transecta_norte_2017, path=save_path + 'Transectas/', fname='transecta_norte_2017')
-
+save.var(var=transecta_central_2017, path=save_path + 'Transectas/', fname='transecta_central_2017')
+save.var(var=transecta_sur_2017, path=save_path + 'Transectas/', fname='transecta_sur_2017')
+save.var(var=transecta_central_2021, path=save_path + 'Transectas/', fname='transecta_central_2021')
+save.var(var=transecta_sur_2021, path=save_path + 'Transectas/', fname='transecta_sur_2021')
 
 from scipy.interpolate import griddata
 
@@ -174,6 +177,8 @@ transecta_norte_2017['temp'] = transecta_norte_2017['temp'].interpolate(method='
 # Estamos probando seleccionar la temperatura y salinidad de una transecta y graficarla
 transecta = transecta_central_2017
 transecta = transecta_norte_2017
+transecta = transecta_sur_2017
+
 # Armamos el df de la variable a graficar
 temp = pd.DataFrame(np.nan, index=np.arange(int(transecta.pres.max())+1), columns=transecta.lon.unique())
 sal = pd.DataFrame(np.nan, index=np.arange(int(transecta.pres.max())+1), columns=transecta.lon.unique())
@@ -208,6 +213,18 @@ plt.contourf(lons, temp_columns_sorted.index, temp_columns_sorted.values)
 # Invertimos el eje vertical porque la presion es positiva
 plt.gca().invert_yaxis()
 plt.colorbar()
+
+plt.plot(bat_sur.lon.values, -bat_sur.bat.values, 'k')
+plt.fill_between(bat_sur.lon.values, -bat_sur.bat.values, plt.gca().get_ylim()[0], color='grey', alpha=0.5)
+
+
+plt.plot(bat_norte.lon.values, -bat_norte.bat.values, 'k')
+plt.fill_between(bat_norte.lon.values, -bat_norte.bat.values, plt.gca().get_ylim()[0], color='grey', alpha=0.5)
+
+
+plt.plot(bat_central.lon.values, -bat_central.bat.values, 'k')
+plt.fill_between(bat_central.lon.values, -bat_central.bat.values, plt.gca().get_ylim()[0], color='grey', alpha=0.5)
+
 plt.plot(bat_norte.lon.values, -bat_norte.bat.values, 'k')
 plt.fill_between(bat_norte.lon.values, -bat_norte.bat.values, plt.gca().get_ylim()[0], color='grey', alpha=0.5)
 
