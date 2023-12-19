@@ -4,14 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4fc70955-8fb8-457b-be78-9bbe7478685c" name="Changes" comment="avance sobre las secciones">
-      <change afterPath="$PROJECT_DIR$/gif_campañas.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mapas_sinop.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mapas_sinopticos_campañas.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/seccion_vertical.py" afterDir="false" />
+    <list default="true" id="4fc70955-8fb8-457b-be78-9bbe7478685c" name="Changes" comment="agrego mapas sinopticos de SST y viento superficial &#10;agrego secciones verticales de S y T">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TS-diagram.py" beforeDir="false" afterPath="$PROJECT_DIR$/TS-diagram.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/exploracion.py" beforeDir="false" afterPath="$PROJECT_DIR$/exploracion.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/seccion_vertical.py" beforeDir="false" afterPath="$PROJECT_DIR$/seccion_vertical.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -123,7 +119,15 @@
       <option name="project" value="LOCAL" />
       <updated>1700173512022</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="agrego mapas sinopticos de SST y viento superficial &#10;agrego secciones verticales de S y T">
+      <option name="closed" value="true" />
+      <created>1702584181702</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1702584181702</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -134,14 +138,15 @@
     <MESSAGE value="Separacion de transectas sinopticas, sin est repetidas" />
     <MESSAGE value="diagramas TS y prueba de transectas" />
     <MESSAGE value="avance sobre las secciones" />
-    <option name="LAST_COMMIT_MESSAGE" value="avance sobre las secciones" />
+    <MESSAGE value="agrego mapas sinopticos de SST y viento superficial &#10;agrego secciones verticales de S y T" />
+    <option name="LAST_COMMIT_MESSAGE" value="agrego mapas sinopticos de SST y viento superficial &#10;agrego secciones verticales de S y T" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/exploracion.py</url>
-          <line>112</line>
+          <line>113</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>

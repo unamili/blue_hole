@@ -67,6 +67,7 @@ for i, (reference_date, folder) in enumerate(zip(reference_dates, folders)):
             row['pres'] = presion
             row['temp'] = data.data['t090C'][j]
             row['sal'] = data.data['sal00'][j]
+            row['sigma'] = data.data['sigma-é00'][j]
             # Agregar mas
 
             campaign_data[years[i]] = campaign_data[years[i]].append(row, ignore_index=True)
