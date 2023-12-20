@@ -2,69 +2,99 @@ import numpy as np
 import pandas as pd
 import gsw
 from paths import paths
+import pickle
 
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 
 plots_path = paths().plots_path()
+save_path = paths().save_path()
 
-#data = campaign_data[2017]
+with open(save_path + '/Transectas/transecta_central_2017', 'rb') as file:
+    transecta_central_2017 = pickle.load(file)
+with open(save_path + '/Transectas/transecta_sur_2017', 'rb') as file:
+    transecta_sur_2017 = pickle.load(file)
+with open(save_path + '/Transectas/transecta_sur_2021', 'rb') as file:
+    transecta_sur_2021 = pickle.load(file)
+with open(save_path + '/Transectas/transecta_central_2021', 'rb') as file:
+    transecta_central_2021 = pickle.load(file)
+with open(save_path + '/Transectas/transecta_norte_2017', 'rb') as file:
+    transecta_norte_2017 = pickle.load(file)
 
-data = transecta_central_2021
 
-temp= data.temp
-sal = data.sal
-cant_datos= temp.size
 
-mint = temp.min()
-maxt = temp.max()
-
-mins = sal.min()
-maxs = sal.max()
-
+#temp= data.temp
+#sal= data.sal
+#cant_datos= temp.size
+#mint = temp.min()
+#maxt = temp.max()
+#mins = sal.min()
+#maxs = sal.max()
 #tempL = np.linspace(mint - 1, maxt + 1, cant_datos)
 #salL = np.linspace(mins - 1, maxs + 1, cant_datos)
 
-tempL = np.linspace(0, 14, cant_datos)
-salL = np.linspace(33, 35, cant_datos)
+tempL = np.linspace(0, 14, 1000)
+salL = np.linspace(33, 35, 1000)
 
 Tg, Sg = np.meshgrid(tempL, salL)
 sigma_theta = gsw.sigma0(Sg, Tg)
-#cnt = np.linspace(sigma_theta.min(), sigma_theta.max(), cant_datos)
-lons = sorted(data.lon.unique())
-lats = sorted(data.lat.unique())
-df = data
-#perfil0 = df[df['lon'] == lons[0]]
-perfil1 = df[df['lon'] == lons[1]]
-perfil2 = df[df['lon'] == lons[3]]
-perfil3 = df[df['lon'] == lons[5]]
-perfil4 = df[df['lon'] == lons[7]]
 
-perfil_curioso = df[df['lon'] == lons[6]]
-
+#TS comparacion entre ambas campañas
 fig, ax = plt.subplots(figsize=(10, 10))
 # fig.suptitle(‘programmer:Hafez Ahmad’, fontsize=14, fontweight=’bold’)
-cs = ax.contour(Sg, Tg, sigma_theta, colors='grey', zorder = 1)
+cs = ax.contour(Sg, Tg, sigma_theta, colors='grey', zorder=1)
 cl = plt.clabel(cs, fontsize=10, inline=True, fmt='%.1f')
-
-sc = plt.scatter(sal.values, temp.values, s = 2, c = 'grey')
-sc = plt.scatter(perfil1.sal.values, perfil1.temp.values, s = 2, c = 'yellow')
-sc = plt.scatter(perfil2.sal.values, perfil2.temp.values, s = 2, c = 'orange')
-sc = plt.scatter(perfil3.sal.values, perfil3.temp.values, s = 2, c = 'red')
-sc = plt.scatter(perfil4.sal.values, perfil4.temp.values, s = 2, c = 'purple')
-ax.set_xlabel('Salinity')
-ax.set_ylabel('Temperature[$ ^ \circ$C]')
+#sc5 = plt.scatter(transecta_norte_2017['sal'].values, transecta_norte_2017['temp'].values, s=2, c='grey', label='2017 Norte')
+sc1 = plt.scatter(transecta_sur_2017['sal'].values, transecta_sur_2017['temp'].values, s=2, c='yellowgreen', label='2017 Sur')
+sc2 = plt.scatter(transecta_central_2017['sal'].values, transecta_central_2017['temp'].values, s=2, c='darkolivegreen', label='2017 Central')
+sc3 = plt.scatter(transecta_sur_2021['sal'].values, transecta_sur_2021['temp'].values, s=2, c='royalblue', label='2021 Sur')
+sc4 = plt.scatter(transecta_central_2021['sal'].values, transecta_central_2021['temp'].values, s=2, c='darkblue', label='2021 Central')
+ax.legend()
+ax.set_xlabel('Salinity [UPS]')
+ax.set_ylabel('Temperature [$^\circ$C]')
 ax.set_title('TS Diagram', fontsize = 14, fontweight ='bold')
 ax.xaxis.set_major_locator(MaxNLocator(nbins=6))
 ax.yaxis.set_major_locator(MaxNLocator(nbins=8))
 ax.tick_params(direction='out')
-cb.ax.tick_params(direction='out')
-cb.set_label('Density[kg m$ ^ {-3}$]')
 plt.tight_layout()
+plt.savefig(plots_path + 'TS_comp_campañas.png')
 
-plt.savefig(plots_path + 'TS_transectacentral_2021.png')
+#TS dentro de una misma campaña con distintos colores las transectas
+#2017
+fig, ax = plt.subplots(figsize=(10, 10))
+cs = ax.contour(Sg, Tg, sigma_theta, colors='grey', zorder=1)
+cl = plt.clabel(cs, fontsize=10, inline=True, fmt='%.1f')
+sc1 = plt.scatter(transecta_sur_2017['sal'].values, transecta_sur_2017['temp'].values, s=2, c='gold', label='2017 Sur')
+sc2 = plt.scatter(transecta_central_2017['sal'].values, transecta_central_2017['temp'].values, s=2, c='green', label='2017 Central')
+sc3 = plt.scatter(transecta_norte_2017['sal'].values, transecta_norte_2017['temp'].values, s=2, c='darkblue', label='2017 Norte')
+ax.legend()
+ax.set_xlabel('Salinity [UPS]')
+ax.set_ylabel('Temperature [$^\circ$C]')
+ax.set_title('TS Diagram', fontsize = 14, fontweight ='bold')
+ax.xaxis.set_major_locator(MaxNLocator(nbins=6))
+ax.yaxis.set_major_locator(MaxNLocator(nbins=8))
+ax.tick_params(direction='out')
+plt.tight_layout()
+plt.savefig(plots_path + 'TS_2017.png')
+
+#2021
+fig, ax = plt.subplots(figsize=(10, 10))
+cs = ax.contour(Sg, Tg, sigma_theta, colors='grey', zorder=1)
+cl = plt.clabel(cs, fontsize=10, inline=True, fmt='%.1f')
+sc1 = plt.scatter(transecta_sur_2021['sal'].values, transecta_sur_2021['temp'].values, s=2, c='gold', label='2021 Sur')
+sc2 = plt.scatter(transecta_central_2021['sal'].values, transecta_central_2021['temp'].values, s=2, c='green', label='2021 Central')
+ax.legend()
+ax.set_xlabel('Salinity [UPS]')
+ax.set_ylabel('Temperature [$^\circ$C]')
+ax.set_title('TS Diagram', fontsize = 14, fontweight ='bold')
+ax.xaxis.set_major_locator(MaxNLocator(nbins=6))
+ax.yaxis.set_major_locator(MaxNLocator(nbins=8))
+ax.tick_params(direction='out')
+plt.tight_layout()
+plt.savefig(plots_path + 'TS_2021.png')
 
 
+#Grafico de un perfil
 fig, ax = plt.subplots(figsize=(5, 10))
 plt.plot(perfil_curioso.temp.values, perfil_curioso.pres.values, 'r')
 plt.gca().invert_yaxis()

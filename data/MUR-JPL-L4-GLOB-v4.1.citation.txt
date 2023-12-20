@@ -1,0 +1,1 @@
+JPL MUR MEaSUREs Project. 2015. GHRSST Level 4 MUR Global Foundation Sea Surface Temperature Analysis. Ver. 4.1. PO.DAAC, CA, USA. Dataset accessed 2023-12-12 at https://doi.org/10.5067/GHGMR-4FJ04

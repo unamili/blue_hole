@@ -105,6 +105,8 @@ for i in range(len(lats)-1):
     else:
         None
 
+save.var(var=campaign_data, path=save_path, fname='campaign_data') #Guardo los datos de ambas campañas
+
 estaciones_sin_repetir = estaciones_sorted.drop(estaciones_sorted.index[np.array(i_to_drop)])
 
 # Crea una máscara booleana para filtrar las filas
